@@ -1,5 +1,15 @@
 # Mech KB DB
 
+## Data
+
+Make a `.env` file at the project root with the following data:
+
+```
+SHEET_URL="https://docs.google.com/spreadsheets/d/1234/export?format=csv"
+```
+
+Replace `1234` with the UUID of the public google sheet one intends to use.
+
 ## Credits
 
 Reddit user /u/nerdponx for their data shared on [google sheets](https://docs.google.com/spreadsheets/d/161QQynxAtsbUrHK81T7RnCztNaHFYbJXSrnz8kuApJo/edit?usp=sharing). Originally licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
