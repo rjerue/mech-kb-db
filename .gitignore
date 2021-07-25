@@ -36,3 +36,4 @@ yarn-error.log*
 # app
 /data/
 .env
+/public/resources/

@@ -1,5 +1,8 @@
 require("dotenv").config();
-const fs = require("fs").promises;
+const fs = require("fs");
+const util = require("util");
+const streamPipeline = util.promisify(require("stream").pipeline);
+const fsp = fs.promises;
 const fetch = require("node-fetch");
 const csvToJson = require("csvtojson");
 
@@ -19,18 +22,24 @@ function groupByBrandModelSeries(input) {
   return input.reduce((table, e) => {
     const key = `${e.brand}-${e.series || "_"}-${e.model}`;
     const current = table[key] || [];
+    1;
     return { ...table, [key]: [...current, e] };
   }, {});
 }
 
-async function renewDataFolder() {
-  await fs.rmdir("./data", { recursive: true });
-  await fs.mkdir("./data");
+async function renewFolder(path) {
+  const fp = `${process.cwd()}/${path}`;
+  await fsp.rmdir(fp, { recursive: true });
+  await fsp.mkdir(fp);
 }
 
-async function writeData(name, data = { error: "No input!" }) {
-  return fs.writeFile(
-    `${process.cwd()}/data/${name.replace(/ /g, "_")}.json`,
+function renewDataFolder() {
+  return Promise.all([renewFolder("data"), renewFolder("public/resources")]);
+}
+
+function writeJSON(name, path, data = { error: "No input!" }) {
+  return fsp.writeFile(
+    `${process.cwd()}/${path}/${name.replace(/ /g, "_")}.json`,
     JSON.stringify(data)
   );
 }
@@ -47,6 +56,18 @@ function checkData(data) {
     .includes(false);
 }
 
+async function imgToPublic(id, imgUrl) {
+  const img = await fetch.default(imgUrl);
+  if (!img.ok) {
+    console.warn(`Unexpected response for ${imgUrl}. ${img.statusText}`);
+  } else {
+    return streamPipeline(
+      img.body,
+      fs.createWriteStream(`${process.cwd()}/public/resources/${id}.jpg`)
+    );
+  }
+}
+
 async function main() {
   const renewData = renewDataFolder();
   const csv = await fetch(sheetUrl);
@@ -57,11 +78,18 @@ async function main() {
   if (isDataOK) {
     await renewData;
     await Promise.all([
-      writeData("all", jsonNormalize),
-      writeData("grouped", jsonGrouped),
+      writeJSON("all", "data", jsonNormalize),
+      writeJSON("grouped", "data", jsonGrouped),
       ...Object.entries(jsonGrouped).map(([key, value]) =>
-        writeData(key, value)
+        writeJSON(key, "data", value)
       ),
+      ...jsonNormalize.flatMap(({ img, UUID }) => {
+        if (!img) {
+          return [];
+        }
+        const imgArray = img.split(" ");
+        return imgArray.map((e, i) => imgToPublic(`${UUID}-${i}`, e));
+      }),
     ]);
   }
 }
