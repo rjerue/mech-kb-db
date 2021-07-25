@@ -4,19 +4,16 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
 import { theme } from "../theme";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  React.useEffect(() => {
-    // Remove the server-side injected CSS.
-    const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement?.removeChild(jssStyles);
-    }
-  }, []);
+const cache = createCache({ key: "css", prepend: true });
+cache.compat = true;
 
+export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <CacheProvider value={cache}>
       <Head>
         <title>Mech KB DB</title>
         <meta
@@ -34,7 +31,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         <CssBaseline />
         <Component {...pageProps} />
       </ThemeProvider>
-    </>
+    </CacheProvider>
   );
 }
-export default MyApp;
