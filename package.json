@@ -5,10 +5,11 @@
   "scripts": {
     "data": "node data",
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn data && next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "license": "MPL-2.0",
   "dependencies": {
     "@emotion/cache": "^11.4.0",
     "@emotion/react": "^11.4.0",
