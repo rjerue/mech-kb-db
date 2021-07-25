@@ -1,3 +1,11 @@
+# Mech KB DB
+
+## Credits
+
+Reddit user /u/nerdponx for their data shared on [google sheets](https://docs.google.com/spreadsheets/d/161QQynxAtsbUrHK81T7RnCztNaHFYbJXSrnz8kuApJo/edit?usp=sharing). Originally licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+# Dev
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
