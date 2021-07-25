@@ -10,7 +10,7 @@ const sheetUrl = process.env.SHEET_URL;
 
 function normalize(input) {
   return input.reduce((list, { hide, ...e }) => {
-    if (hide) {
+    if (hide || !e.UUID) {
       //remove things marked "hide"
       return list;
     }
