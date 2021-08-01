@@ -1,19 +1,16 @@
 import React, { useEffect } from "react";
-import Image from "next/image";
 import grouped from "../data/grouped.json";
 import Box from "@material-ui/core/Box";
-import Grid, { GridSize } from "@material-ui/core/Grid";
+import Grid from "@material-ui/core/Grid";
 import Chip from "@material-ui/core/Chip";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/core/Autocomplete";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { MechSwitch } from "../types/switch";
 import Fuse from "fuse.js";
-import Slider from "@material-ui/core/Slider";
-import { Mark, SliderProps } from "@material-ui/core";
+import { makeMarks, FilterSlider } from "../components/FilterSlider";
+import { SwitchCard } from "../components/SwitchCard";
 
 export const getStaticProps = () => {
   const switches = Object.entries(grouped).map(([key, value]) => {
@@ -30,57 +27,7 @@ type GetStaticPropsReturn = ReturnType<typeof getStaticProps>;
 type HomeProps = GetStaticPropsReturn["props"];
 
 function makeFuse(switches: MechSwitch[]) {
-  return new Fuse(switches, { keys: ["displayName"] });
-}
-
-interface FilterSliderProps extends SliderProps {
-  marks: Mark[];
-  label: string;
-  id: string;
-  sm: GridSize;
-}
-
-const FilterSlider: React.FC<FilterSliderProps> = ({
-  label,
-  marks,
-  id,
-  sm,
-  ...props
-}) => {
-  const max = Math.max(...marks.map(({ value }) => value));
-  return (
-    <Grid item sm={sm} xs={12}>
-      <Typography id={id} gutterBottom>
-        {label}
-      </Typography>
-      <Slider
-        aria-labelledby={id}
-        marks={marks}
-        defaultValue={max}
-        min={Math.min(...marks.map(({ value }) => value))}
-        max={max}
-        valueLabelDisplay="auto"
-        {...props}
-      />
-    </Grid>
-  );
-};
-
-function makeMarks(numbers: number[], label: string): Mark[] {
-  const asSet = new Set(numbers);
-  const asSortedArray = Array.from(asSet).sort();
-  return asSortedArray.map((value, i, a) => {
-    return {
-      value,
-      label:
-        value % 5 === 0 ? (
-          <span className={i === 0 || i === a.length - 1 ? "" : "mark-middle"}>
-            {value}
-            {label}
-          </span>
-        ) : null,
-    };
-  });
+  return new Fuse(switches, { keys: ["displayName", "type"] });
 }
 
 export default function Home({ switches }: HomeProps) {
@@ -88,20 +35,15 @@ export default function Home({ switches }: HomeProps) {
     switches.map(({ operatingForce }) => operatingForce),
     "cN"
   );
-
-  Array.from(new Set(switches.map(({ operatingForce }) => operatingForce)))
-    .sort()
-    .map((e) => ({ value: e, label: `${e}cN` }));
-  const activationPoint = Array.from(
-    new Set(switches.map(({ activationPoint }) => activationPoint))
-  )
-    .sort()
-    .map((e) => ({ value: e, label: `${e}mm` }));
-  const travelDistance = Array.from(
-    new Set(switches.map(({ travelDistance }) => travelDistance))
-  )
-    .sort()
-    .map((e) => ({ value: e, label: `${e}mm` }));
+  const activationPoint = makeMarks(
+    switches.map(({ activationPoint }) => activationPoint),
+    "mm"
+  );
+  const travelDistance = makeMarks(
+    switches.map(({ travelDistance }) => travelDistance),
+    "mm"
+  );
+  const switchTypes = Array.from(new Set(switches.map(({ type }) => type)));
 
   const [names, setNamesSet] = React.useState<string[]>([]);
   const [displayedSwitches, displayedSwitchesSet] = React.useState(switches);
@@ -143,9 +85,13 @@ export default function Home({ switches }: HomeProps) {
               onChange={(_, newValue: string[] | null) => {
                 setNamesSet(newValue || []);
                 if (newValue && newValue.length > 0) {
+                  const expression = newValue.flatMap(
+                    (e) =>
+                      [{ displayName: e }, { type: e }] as Fuse.Expression[]
+                  );
                   const searchResult = fuseRef.current
                     ?.search({
-                      $or: newValue.map((e) => ({ displayName: e })),
+                      $or: expression,
                     })
                     ?.map((e) => e.item);
                   if (searchResult) {
@@ -160,7 +106,10 @@ export default function Home({ switches }: HomeProps) {
               }}
               multiple
               id="tags-filled"
-              options={Object.values(switches).map((e) => e.displayName)}
+              options={[
+                ...switchTypes,
+                ...Object.values(switches).map((e) => e.displayName),
+              ]}
               freeSolo
               renderTags={(value: string[], getTagProps) =>
                 value.map((option: string, index: number) => (
@@ -226,45 +175,7 @@ export default function Home({ switches }: HomeProps) {
             {filterDisplayedSwitches.map((e) => {
               return (
                 <Grid key={e.uuid} item xs={12} sm={6} md={4}>
-                  <Card>
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {e.displayName}
-                      </Typography>
-                      <Grid container justifyContent="space-between">
-                        <Grid xs={9} item>
-                          <Grid container direction="row">
-                            <Grid xs={12} item>
-                              <Typography>Type: {e.type}</Typography>
-                            </Grid>
-                            <Grid xs={12} item>
-                              <Typography>
-                                Operating force: {e.operatingForce}cN
-                              </Typography>
-                            </Grid>
-                            <Grid xs={12} item>
-                              <Typography>
-                                Activation point: {e.activationPoint}mm
-                              </Typography>
-                            </Grid>
-                            <Grid xs={12} item>
-                              <Typography>
-                                Travel distance: {e.travelDistance}mm
-                              </Typography>
-                            </Grid>
-                          </Grid>
-                        </Grid>
-                        <Grid xs={3} item>
-                          <Image
-                            src={`/resources/${e.uuid}-0.jpg`}
-                            width="120"
-                            height="120"
-                            alt={e.displayName}
-                          />
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                  </Card>
+                  <SwitchCard {...e} />
                 </Grid>
               );
             })}
