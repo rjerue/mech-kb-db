@@ -7,23 +7,36 @@ const fetch = require("node-fetch");
 const csvToJson = require("csvtojson");
 
 const sheetUrl = process.env.SHEET_URL;
+const keysToNumber = [
+  "operatingForce",
+  "activationPoint",
+  "travelDistance",
+  "lifespan",
+];
+
+function parseInput(input) {
+  return Object.entries(input).reduce((obj, [key, value]) => {
+    return {
+      ...obj,
+      [key]: keysToNumber.includes(key) ? parseInt(value) : value,
+    };
+  }, {});
+}
 
 function normalize(input) {
   return input.reduce((list, { hide, ...e }) => {
-    if (hide || !e.UUID) {
+    if (hide || !e.uuid) {
       //remove things marked "hide"
       return list;
     }
-    return [...list, e];
+    return [...list, parseInput(e)];
   }, []);
 }
 
 function groupByBrandModelSeries(input) {
   return input.reduce((table, e) => {
-    const key = `${e.brand}-${e.series || "_"}-${e.model}`;
-    const current = table[key] || [];
-    1;
-    return { ...table, [key]: [...current, e] };
+    const key = `${e.brand}-${e.switchName}`;
+    return { ...table, [key]: e };
   }, {});
 }
 
@@ -44,18 +57,6 @@ function writeJSON(name, path, data = { error: "No input!" }) {
   );
 }
 
-function checkData(data) {
-  return !Object.entries(data)
-    .map(([key, value]) => {
-      if (value.length > 1 && value.some((e) => e.version === "")) {
-        console.warn(`Data could be wrong. See ${key}`, value.length);
-        return false;
-      }
-      return true;
-    })
-    .includes(false);
-}
-
 async function imgToPublic(id, imgUrl) {
   const img = await fetch.default(imgUrl);
   if (!img.ok) {
@@ -74,24 +75,21 @@ async function main() {
   const json = await csvToJson().fromStream(csv.body);
   const jsonNormalize = normalize(json);
   const jsonGrouped = groupByBrandModelSeries(jsonNormalize);
-  const isDataOK = checkData(jsonGrouped);
-  if (isDataOK) {
-    await renewData;
-    await Promise.all([
-      writeJSON("all", "data", jsonNormalize),
-      writeJSON("grouped", "data", jsonGrouped),
-      ...Object.entries(jsonGrouped).map(([key, value]) =>
-        writeJSON(key, "data", value)
-      ),
-      ...jsonNormalize.flatMap(({ img, UUID }) => {
-        if (!img) {
-          return [];
-        }
-        const imgArray = img.split(" ");
-        return imgArray.map((e, i) => imgToPublic(`${UUID}-${i}`, e));
-      }),
-    ]);
-  }
+  await renewData;
+  await Promise.all([
+    writeJSON("all", "data", jsonNormalize),
+    writeJSON("grouped", "data", jsonGrouped),
+    ...Object.entries(jsonGrouped).map(([key, value]) =>
+      writeJSON(key, "data", value)
+    ),
+    ...jsonNormalize.flatMap(({ img, uuid }) => {
+      if (!img) {
+        return [];
+      }
+      const imgArray = img.split(" ");
+      return imgArray.map((e, i) => imgToPublic(`${uuid}-${i}`, e));
+    }),
+  ]);
 }
 
 main();
