@@ -13,7 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import { MechSwitch } from "../types/switch";
 import Fuse from "fuse.js";
 import Slider from "@material-ui/core/Slider";
-import { Mark, SliderPrps } from "@material-ui/core";
+import { Mark, SliderProps } from "@material-ui/core";
 
 export const getStaticProps = () => {
   const switches = Object.entries(grouped).map(([key, value]) => {
@@ -33,7 +33,7 @@ function makeFuse(switches: MechSwitch[]) {
   return new Fuse(switches, { keys: ["displayName"] });
 }
 
-interface FilterSliderProps extends SliderPrps {
+interface FilterSliderProps extends SliderProps {
   marks: Mark[];
   label: string;
   id: string;
