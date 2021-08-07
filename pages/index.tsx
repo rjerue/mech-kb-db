@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import grouped from "../data/grouped.json";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import Chip from "@material-ui/core/Chip";
@@ -7,15 +6,13 @@ import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/core/Autocomplete";
 import Typography from "@material-ui/core/Typography";
-import { MechSwitch } from "../types/switch";
-import Fuse from "fuse.js";
+import { GetSwitchesParams } from "../types/switch";
 import { makeMarks, FilterSlider } from "../components/FilterSlider";
 import { SwitchCard } from "../components/SwitchCard";
+import { getSwitches } from "../lib/switch";
 
 export const getStaticProps = () => {
-  const switches = Object.entries(grouped).map(([key, value]) => {
-    return { ...value, displayName: key.replace(/\-|_/g, " ") } as MechSwitch;
-  });
+  const switches = getSwitches();
   return {
     props: {
       switches,
@@ -26,20 +23,28 @@ export const getStaticProps = () => {
 type GetStaticPropsReturn = ReturnType<typeof getStaticProps>;
 type HomeProps = GetStaticPropsReturn["props"];
 
-function makeFuse(switches: MechSwitch[]) {
-  return new Fuse(switches, { keys: ["displayName", "type"] });
+async function getSwitchesAPI(params: GetSwitchesParams) {
+  const result = await fetch(
+    "/api/switches?" + new URLSearchParams({ filters: JSON.stringify(params) })
+  );
+  if (!result.ok) {
+    console.error("Uh oh", result);
+    return [];
+  }
+  const data = await result.json();
+  return data;
 }
 
 export default function Home({ switches }: HomeProps) {
-  const operatingForceSlider = makeMarks(
+  const operatingForceTicks = makeMarks(
     switches.map(({ operatingForce }) => operatingForce),
     "cN"
   );
-  const activationPoint = makeMarks(
+  const activationPointTicks = makeMarks(
     switches.map(({ activationPoint }) => activationPoint),
     "mm"
   );
-  const travelDistance = makeMarks(
+  const travelDistanceTicks = makeMarks(
     switches.map(({ travelDistance }) => travelDistance),
     "mm"
   );
@@ -55,20 +60,22 @@ export default function Home({ switches }: HomeProps) {
     React.useState<number>(Number.MAX_SAFE_INTEGER);
   const [travelDistanceFilter, travelDistanceFilterSet] =
     React.useState<number>(Number.MAX_SAFE_INTEGER);
-  const fuseRef = React.useRef<ReturnType<typeof makeFuse>>();
-  useEffect(() => {
-    fuseRef.current = makeFuse(switches);
-  }, [switches]);
-
-  const filterDisplayedSwitches = displayedSwitches.filter(
-    ({ activationPoint, travelDistance, operatingForce }) => {
-      return (
-        activationPoint <= activationPointFilter &&
-        travelDistance <= travelDistanceFilter &&
-        operatingForce <= forceFilter
-      );
+  const isInitialMountDone = React.useRef(false);
+  React.useEffect(() => {
+    if (isInitialMountDone.current) {
+      getSwitchesAPI({
+        maxActivationPoint: activationPointFilter,
+        maxTravelDistance: travelDistanceFilter,
+        maxOperatingForce: forceFilter,
+        searchParams: names,
+      }).then((data) => {
+        displayedSwitchesSet(data);
+      });
+    } else {
+      isInitialMountDone.current = true;
     }
-  );
+  }, [activationPointFilter, travelDistanceFilter, forceFilter, names]);
+  const filterDisplayedSwitches = displayedSwitches;
   return (
     <Container>
       <Grid spacing={3} container>
@@ -84,22 +91,6 @@ export default function Home({ switches }: HomeProps) {
               inputValue={input}
               onChange={(_, newValue: string[] | null) => {
                 setNamesSet(newValue || []);
-                if (newValue && newValue.length > 0) {
-                  const expression = newValue.flatMap(
-                    (e) =>
-                      [{ displayName: e }, { type: e }] as Fuse.Expression[]
-                  );
-                  const searchResult = fuseRef.current
-                    ?.search({
-                      $or: expression,
-                    })
-                    ?.map((e) => e.item);
-                  if (searchResult) {
-                    displayedSwitchesSet(searchResult);
-                  }
-                } else {
-                  displayedSwitchesSet(switches);
-                }
               }}
               onInputChange={(_, newInputValue) => {
                 inputValueSet(newInputValue);
@@ -144,7 +135,7 @@ export default function Home({ switches }: HomeProps) {
                 sm={12}
                 id={"max-operating-force"}
                 label="Max operating force"
-                marks={operatingForceSlider}
+                marks={operatingForceTicks}
                 onChangeCommitted={(_, value) =>
                   forceFilterSet(value as number)
                 }
@@ -153,7 +144,7 @@ export default function Home({ switches }: HomeProps) {
                 sm={5}
                 id={"max-activation"}
                 label="Max activation point"
-                marks={activationPoint}
+                marks={activationPointTicks}
                 onChangeCommitted={(_, value) =>
                   activationPointFilterSet(value as number)
                 }
@@ -162,7 +153,7 @@ export default function Home({ switches }: HomeProps) {
                 sm={5}
                 id={"max-travel"}
                 label="Max travel distance"
-                marks={travelDistance}
+                marks={travelDistanceTicks}
                 onChangeCommitted={(_, value) =>
                   travelDistanceFilterSet(value as number)
                 }

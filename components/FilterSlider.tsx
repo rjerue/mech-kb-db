@@ -2,7 +2,7 @@ import React from "react";
 import Grid, { GridSize } from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
-import { Mark, SliderProps } from "@material-ui/core";
+import type { Mark, SliderProps } from "@material-ui/core";
 
 interface FilterSliderProps extends SliderProps {
   marks: Mark[];

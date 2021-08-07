@@ -11,4 +11,12 @@ export interface MechSwitch {
   activationPoint: number; // mm
   travelDistance: number; // mm
   lifespan: number; // Million
+  forceCurveUrl?: string;
+}
+
+export interface GetSwitchesParams {
+  maxActivationPoint?: number;
+  maxTravelDistance?: number;
+  maxOperatingForce?: number;
+  searchParams?: string[];
 }
