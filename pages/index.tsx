@@ -83,7 +83,7 @@ export default function Home({ switches }: HomeProps) {
           }).then((data) => {
             displayedSwitchesSet(data);
           }),
-        200
+        380
       );
       return () => {
         clearTimeout(timeout);
