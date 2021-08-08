@@ -5,9 +5,6 @@ import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControl from "@material-ui/core/FormControl";
-import IconButton from "@material-ui/core/IconButton";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
 import FormGroup from "@material-ui/core/FormGroup";
 import { GetSwitchesParams, MechSwitch, SwitchType } from "../types/switch";
 import { makeMarks, FilterSlider } from "../components/FilterSlider";
@@ -18,8 +15,6 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { SearchBar } from "../components/SearchBar";
 import { SwitchTypeCheckbox } from "../components/SwitchTypeCheckbox";
 import { Layout } from "../components/Layout";
-import { useTheme } from "@material-ui/core/styles";
-import { ThemeContext } from "../context/ThemeContext";
 
 export const getStaticProps = () => {
   const switches = getSwitches();
@@ -77,8 +72,6 @@ export default function Home({ switches }: HomeProps) {
     React.useState<number>(Number.MAX_SAFE_INTEGER);
   const isInitialMountDone = React.useRef(false);
   const matches = useMediaQuery("(min-width:769px)");
-  const theme = useTheme();
-  const { setThemeMode } = React.useContext(ThemeContext);
   React.useEffect(() => {
     if (isInitialMountDone.current) {
       // This does a debounce
@@ -138,34 +131,6 @@ export default function Home({ switches }: HomeProps) {
           </Grid>
         </Grid>
       </Container>
-      <Box
-        position="absolute"
-        sx={{
-          top: {
-            xs: "10px",
-            sm: "16px",
-            md: "24px",
-          },
-          right: {
-            xs: "8px",
-            sm: "28px",
-          },
-        }}
-      >
-        <IconButton
-          size="small"
-          onClick={() =>
-            setThemeMode(theme.palette.mode === "dark" ? "light" : "dark")
-          }
-          color="inherit"
-        >
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
-      </Box>
       <DrawerComplete>
         <FormGroup>
           <Grid container gap={matches ? 1 : 2}>
