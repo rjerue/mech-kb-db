@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { MechSwitch } from "../types/switch";
+import { capitalizeFirstLetter } from "../lib/string";
 
 export const SwitchCard: React.FC<MechSwitch> = ({
   displayName,
@@ -23,7 +24,7 @@ export const SwitchCard: React.FC<MechSwitch> = ({
           <Grid xs={9} item>
             <Grid container direction="row">
               <Grid xs={12} item>
-                <Typography>Type: {type}</Typography>
+                <Typography>Type: {capitalizeFirstLetter(type)}</Typography>
               </Grid>
               <Grid xs={12} item>
                 <Typography>Operating force: {operatingForce}cN</Typography>

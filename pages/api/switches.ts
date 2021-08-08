@@ -6,19 +6,18 @@ import { MechSwitch, GetSwitchesParams } from "../../types/switch";
 
 const switches = getSwitches();
 
-const fuse = new Fuse(switches, { keys: ["displayName", "type"] });
+const fuse = new Fuse(switches, { keys: ["displayName"] });
 
 function fuseSearch(searchParams: Required<GetSwitchesParams>["searchParams"]) {
   if (searchParams && searchParams.length > 0) {
     const expression = searchParams.flatMap(
-      (e) => [{ displayName: e }, { type: e }] as Fuse.Expression[]
+      (e) => [{ displayName: e }] as Fuse.Expression[]
     );
-    const searchResult = fuse
-      ?.search({
-        $or: expression,
-      })
-      ?.map((e) => e.item);
-    return searchResult;
+    const searchResult = fuse?.search({
+      $or: expression,
+    });
+    const items = searchResult?.map((e) => e.item);
+    return items;
   }
   return switches;
 }
@@ -33,14 +32,16 @@ export default function handler(
     maxOperatingForce = Number.MAX_SAFE_INTEGER,
     maxTravelDistance = Number.MAX_SAFE_INTEGER,
     searchParams = [],
+    switchType = [],
   } = JSON.parse(filters as string) as GetSwitchesParams;
   const fuseFiltered = fuseSearch(searchParams);
   const filteredSwitches = fuseFiltered.filter(
-    ({ activationPoint, travelDistance, operatingForce }) => {
+    ({ activationPoint, travelDistance, operatingForce, type }) => {
       return (
         activationPoint <= maxActivationPoint &&
         travelDistance <= maxTravelDistance &&
-        operatingForce <= maxOperatingForce
+        operatingForce <= maxOperatingForce &&
+        (switchType.length === 0 || switchType.includes(type))
       );
     }
   );

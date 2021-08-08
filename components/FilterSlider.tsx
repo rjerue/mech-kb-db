@@ -1,39 +1,38 @@
 import React from "react";
-import Grid, { GridSize } from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 import Slider from "@material-ui/core/Slider";
 import type { Mark, SliderProps } from "@material-ui/core";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
 
 interface FilterSliderProps extends SliderProps {
   marks: Mark[];
   label: string;
   id: string;
-  sm: GridSize;
 }
 
 export const FilterSlider: React.FC<FilterSliderProps> = ({
   label,
   marks,
   id,
-  sm,
   ...props
 }) => {
   const max = Math.max(...marks.map(({ value }) => value));
   return (
-    <Grid item sm={sm} xs={12}>
-      <Typography id={id} gutterBottom>
-        {label}
-      </Typography>
-      <Slider
-        aria-labelledby={id}
-        marks={marks}
-        defaultValue={max}
-        min={Math.min(...marks.map(({ value }) => value))}
-        max={max}
-        valueLabelDisplay="auto"
-        {...props}
-      />
-    </Grid>
+    <FormControl fullWidth component="fieldset">
+      <FormLabel component="legend">{label}</FormLabel>
+      <Box padding="0 12px">
+        <Slider
+          aria-labelledby={id}
+          marks={marks}
+          defaultValue={max}
+          min={Math.min(...marks.map(({ value }) => value))}
+          max={max}
+          valueLabelDisplay="auto"
+          {...props}
+        />
+      </Box>
+    </FormControl>
   );
 };
 
@@ -43,13 +42,7 @@ export function makeMarks(numbers: number[], label: string): Mark[] {
   return asSortedArray.map((value, i, a) => {
     return {
       value,
-      label:
-        value % 5 === 0 ? (
-          <span className={i === 0 || i === a.length - 1 ? "" : "mark-middle"}>
-            {value}
-            {label}
-          </span>
-        ) : null,
+      label: i === 0 || i === a.length - 1 ? `${value} ${label}` : null,
     };
   });
 }

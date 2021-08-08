@@ -1,4 +1,4 @@
-export type SwitchType = "Linear" | "Tactile" | "Clicky";
+export type SwitchType = "linear" | "tactile" | "clicky";
 
 export interface MechSwitch {
   displayName: string;
@@ -19,4 +19,5 @@ export interface GetSwitchesParams {
   maxTravelDistance?: number;
   maxOperatingForce?: number;
   searchParams?: string[];
+  switchType?: SwitchType[];
 }
