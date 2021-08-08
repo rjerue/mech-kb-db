@@ -45,7 +45,7 @@ export const DrawerComplete: React.FC = ({ children }) => {
                     alignItems="center"
                   >
                     <Grid item>
-                      <Typography variant="h3" component="h2">
+                      <Typography color="primary" variant="h3" component="h2">
                         Filters
                       </Typography>
                     </Grid>

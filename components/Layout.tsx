@@ -10,8 +10,27 @@ export const Layout: React.FC = ({ children }) => {
   return (
     <Box position="relative" minHeight="100vh">
       <Container>
-        <Box textAlign="center">
-          <Typography variant="h1">Mech KB DB</Typography>
+        <Box
+          sx={{
+            textAlign: {
+              xs: "left",
+              sm: "center",
+            },
+          }}
+        >
+          <Typography
+            sx={{
+              fontSize: {
+                xs: "3rem",
+                sm: "5rem",
+                md: "6rem",
+              },
+            }}
+            color="primary"
+            variant="h1"
+          >
+            Mech KB DB
+          </Typography>
         </Box>
       </Container>
       <Box paddingBottom="36px">{children}</Box>
@@ -41,7 +60,11 @@ export const Layout: React.FC = ({ children }) => {
             </NextLink>
           </Grid>
           <Grid item>
-            <Link target="_blank" href="https://github.com/rjerue/mech-kb-db">
+            <Link
+              target="_blank"
+              rel="noopener"
+              href="https://github.com/rjerue/mech-kb-db"
+            >
               Source
             </Link>
           </Grid>

@@ -8,7 +8,7 @@ import Document, {
 } from "next/document";
 import createEmotionServer from "@emotion/server/create-instance";
 import createCache from "@emotion/cache";
-import { theme } from "../theme";
+import { makeTheme } from "../lib/theme";
 import { CacheProvider } from "@emotion/react";
 
 function getCache() {
@@ -16,6 +16,8 @@ function getCache() {
   cache.compat = true;
   return cache;
 }
+
+const theme = makeTheme();
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {

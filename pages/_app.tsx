@@ -6,12 +6,20 @@ import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-import { theme } from "../theme";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { makeTheme } from "../lib/theme";
+import { ThemeContext } from "../context/ThemeContext";
 
 const cache = createCache({ key: "css", prepend: true });
 cache.compat = true;
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [theme, themeSet] = React.useState(makeTheme(prefersDarkMode));
+  React.useEffect(() => {
+    themeSet(makeTheme(localStorage.getItem("theme-mode") === "dark"));
+  }, []);
+
   return (
     <CacheProvider value={cache}>
       <Head>
@@ -28,7 +36,16 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />
+        <ThemeContext.Provider
+          value={{
+            setThemeMode: (mode) => {
+              localStorage.setItem("theme-mode", mode);
+              themeSet(makeTheme(mode === "dark"));
+            },
+          }}
+        >
+          <Component {...pageProps} />
+        </ThemeContext.Provider>
       </ThemeProvider>
     </CacheProvider>
   );
