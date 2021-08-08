@@ -1,5 +1,6 @@
 import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
 import NextLink from "next/link";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/system/Box";
@@ -18,21 +19,33 @@ export const Layout: React.FC = ({ children }) => {
         position="absolute"
         bottom="0"
         width="100%"
-        component="footer"
         display="flex"
-        justifyContent="space-evenly"
-        alignItems="center"
+        component="footer"
         height="36px"
       >
-        <NextLink href="/">
-          <Link>Home</Link>
-        </NextLink>
-        <NextLink href="/about">
-          <Link>About</Link>
-        </NextLink>
-        <Link target="_blank" href="https://github.com/rjerue/mech-kb-db">
-          Source
-        </Link>
+        <Grid
+          direction="row"
+          container
+          justifyContent="center"
+          alignItems="center"
+          gap={5}
+        >
+          <Grid item>
+            <NextLink href="/">
+              <Link>Home</Link>
+            </NextLink>
+          </Grid>
+          <Grid item>
+            <NextLink href="/about">
+              <Link>About</Link>
+            </NextLink>
+          </Grid>
+          <Grid item>
+            <Link target="_blank" href="https://github.com/rjerue/mech-kb-db">
+              Source
+            </Link>
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );
