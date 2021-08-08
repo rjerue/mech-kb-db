@@ -111,7 +111,11 @@ export default function Home({ switches }: HomeProps) {
         <Grid spacing={3} container>
           <Grid item xs={12}>
             <Box>
-              <SearchBar switches={switches} setNamesSet={setNamesSet} />
+              <SearchBar
+                value={names}
+                switches={switches}
+                setNamesSet={setNamesSet}
+              />
             </Box>
           </Grid>
           <Grid item xs={12}>
@@ -133,7 +137,11 @@ export default function Home({ switches }: HomeProps) {
             <Grid item xs={12}>
               <FormControl fullWidth component="fieldset">
                 <FormLabel component="legend">Search by name:</FormLabel>
-                <SearchBar switches={switches} setNamesSet={setNamesSet} />
+                <SearchBar
+                  value={names}
+                  switches={switches}
+                  setNamesSet={setNamesSet}
+                />
               </FormControl>
             </Grid>
             <Grid item xs={12}>
