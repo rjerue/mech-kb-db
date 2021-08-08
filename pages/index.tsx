@@ -11,7 +11,6 @@ import { makeMarks, FilterSlider } from "../components/FilterSlider";
 import { SwitchCard } from "../components/SwitchCard";
 import { getSwitches } from "../lib/switch";
 import { DrawerComplete } from "../components/Drawer";
-import { PositiveNumberInput } from "../components/PositiveNumberInput";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { SearchBar } from "../components/SearchBar";
 import { SwitchTypeCheckbox } from "../components/SwitchTypeCheckbox";
@@ -47,6 +46,14 @@ export default function Home({ switches }: HomeProps) {
   const operatingForceTicks = makeMarks(
     switches.map(({ operatingForce }) => operatingForce),
     "cN"
+  );
+  const activationPointTicks = makeMarks(
+    switches.map(({ activationPoint }) => activationPoint),
+    "mm"
+  );
+  const travelDistanceTicks = makeMarks(
+    switches.map(({ travelDistance }) => travelDistance),
+    "mm"
   );
 
   const [names, setNamesSet] = React.useState<string[]>([]);
@@ -135,19 +142,23 @@ export default function Home({ switches }: HomeProps) {
                 <SwitchTypeCheckbox
                   switchType="clicky"
                   handleChange={switchTypeFilterSet}
+                  defaultChecked={switchTypeFilter["clicky"]}
                 />
                 <SwitchTypeCheckbox
                   switchType="linear"
                   handleChange={switchTypeFilterSet}
+                  defaultChecked={switchTypeFilter["linear"]}
                 />
                 <SwitchTypeCheckbox
                   switchType="tactile"
                   handleChange={switchTypeFilterSet}
+                  defaultChecked={switchTypeFilter["tactile"]}
                 />
               </FormControl>
             </Grid>
             <Grid item xs={12}>
               <FilterSlider
+                defaultValue={forceFilter}
                 className={"operating-force-slider"}
                 id={"max-operating-force"}
                 label="Max operating force"
@@ -158,25 +169,32 @@ export default function Home({ switches }: HomeProps) {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth component="fieldset">
-                <FormLabel component="legend">Other characteristics:</FormLabel>
-                <Grid container gap={1}>
-                  <Grid item xs={12}>
-                    <PositiveNumberInput
-                      fullWidth
-                      handleChange={activationPointFilterSet}
-                      label="Max activation point"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <PositiveNumberInput
-                      fullWidth
-                      handleChange={travelDistanceFilterSet}
-                      label="Max travel distance"
-                    />
-                  </Grid>
-                </Grid>
-              </FormControl>
+              <FilterSlider
+                defaultValue={activationPointFilter}
+                className={"activation-point-slider"}
+                id={"max-activation-point"}
+                step={0.1}
+                label="Max Activation Point"
+                marks={activationPointTicks}
+                onChangeCommitted={(_, value) =>
+                  activationPointFilterSet(value as number)
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FilterSlider
+                className={"travel-distance-slider"}
+                step={0.1}
+                defaultValue={travelDistanceFilter}
+                id={"max-travel-distance"}
+                label="Max travel-distance"
+                marks={travelDistanceTicks}
+                onChangeCommitted={(_, value) =>
+                  travelDistanceFilterSet(value as number)
+                }
+              />
+            </Grid>
+            <Grid item xs={12}>
               <Typography variant="caption">
                 {displayedSwitches.length} results found
               </Typography>
