@@ -15,7 +15,7 @@ export default function About() {
           </Typography>
           <Typography gutterBottom>
             Developed with ❤️ by{" "}
-            <Link target="_blank" href="https://jerue.org/">
+            <Link target="_blank" rel="noopener" href="https://jerue.org/">
               Ryan Jerue
             </Link>
             .
@@ -27,6 +27,7 @@ export default function About() {
             Some data from Reddit user /u/nerdponx data shared on{" "}
             <Link
               target="_blank"
+              rel="noopener"
               href="https://docs.google.com/spreadsheets/d/161QQynxAtsbUrHK81T7RnCztNaHFYbJXSrnz8kuApJo/edit?usp=sharing"
             >
               google sheets
@@ -34,6 +35,7 @@ export default function About() {
             . Originally licensed{" "}
             <Link
               target="_blank"
+              rel="noopener"
               href="https://creativecommons.org/licenses/by/4.0/"
             >
               CC BY 4.0.
