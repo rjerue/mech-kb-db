@@ -32,12 +32,12 @@ export const Layout: React.FC = ({ children }) => {
         >
           <Grid item>
             <NextLink href="/">
-              <Link>Home</Link>
+              <Link href="/">Home</Link>
             </NextLink>
           </Grid>
           <Grid item>
             <NextLink href="/about">
-              <Link>About</Link>
+              <Link href="/about">About</Link>
             </NextLink>
           </Grid>
           <Grid item>
