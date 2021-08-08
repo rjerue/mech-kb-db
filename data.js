@@ -18,7 +18,7 @@ function parseInput(input) {
   return Object.entries(input).reduce((obj, [key, value]) => {
     return {
       ...obj,
-      [key]: keysToNumber.includes(key) ? parseInt(value) : value,
+      [key]: keysToNumber.includes(key) ? parseFloat(value) : value,
     };
   }, {});
 }
