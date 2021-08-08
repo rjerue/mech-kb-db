@@ -15,6 +15,7 @@ import { PositiveNumberInput } from "../components/PositiveNumberInput";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { SearchBar } from "../components/SearchBar";
 import { SwitchTypeCheckbox } from "../components/SwitchTypeCheckbox";
+import { Layout } from "../components/Layout";
 
 export const getStaticProps = () => {
   const switches = getSwitches();
@@ -98,14 +99,9 @@ export default function Home({ switches }: HomeProps) {
     switchTypeFilter,
   ]);
   return (
-    <>
+    <Layout>
       <Container>
         <Grid spacing={3} container>
-          <Grid item xs={12}>
-            <Box textAlign="center">
-              <Typography variant="h1">Mech KB DB</Typography>
-            </Box>
-          </Grid>
           <Grid item xs={12}>
             <Box>
               <SearchBar switches={switches} setNamesSet={setNamesSet} />
@@ -188,6 +184,6 @@ export default function Home({ switches }: HomeProps) {
           </Grid>
         </FormGroup>
       </DrawerComplete>
-    </>
+    </Layout>
   );
 }
