@@ -32,7 +32,7 @@ export default function handler(
     maxOperatingForce = Number.MAX_SAFE_INTEGER,
     maxTravelDistance = Number.MAX_SAFE_INTEGER,
     searchParams = [],
-    switchType = [],
+    switchType,
   } = JSON.parse(filters as string) as GetSwitchesParams;
   const fuseFiltered = fuseSearch(searchParams);
   const filteredSwitches = fuseFiltered.filter(
@@ -41,7 +41,7 @@ export default function handler(
         activationPoint <= maxActivationPoint &&
         travelDistance <= maxTravelDistance &&
         operatingForce <= maxOperatingForce &&
-        (switchType.length === 0 || switchType.includes(type))
+        (Array.isArray(switchType) ? switchType.includes(type) : true)
       );
     }
   );

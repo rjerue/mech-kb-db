@@ -15,14 +15,21 @@ export const FilterSlider: React.FC<FilterSliderProps> = ({
   label,
   marks,
   id,
+  value,
   ...props
 }) => {
   const max = Math.max(...marks.map(({ value }) => value));
+  const [controlValue, controlValueSet] = React.useState(value);
+  React.useEffect(() => {
+    controlValueSet(value);
+  }, [value]);
   return (
     <FormControl fullWidth component="fieldset">
       <FormLabel component="legend">{label}</FormLabel>
       <Box padding="0 12px">
         <Slider
+          value={controlValue}
+          onChange={(_, value) => controlValueSet(value)}
           aria-labelledby={id}
           marks={marks}
           defaultValue={max}

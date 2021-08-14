@@ -15,6 +15,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { SearchBar } from "../components/SearchBar";
 import { SwitchTypeCheckbox } from "../components/SwitchTypeCheckbox";
 import { Layout } from "../components/Layout";
+import { switchReducer, switchReducerInitialState } from "../lib/switchReducer";
 
 export const getStaticProps = () => {
   const switches = getSwitches();
@@ -56,20 +57,18 @@ export default function Home({ switches }: HomeProps) {
     "mm"
   );
 
-  const [names, setNamesSet] = React.useState<string[]>([]);
-  const [switchTypeFilter, switchTypeFilterSet] = React.useState({
-    clicky: true,
-    linear: true,
-    tactile: true,
-  });
-  const [displayedSwitches, displayedSwitchesSet] = React.useState(switches);
-  const [forceFilter, forceFilterSet] = React.useState<number>(
-    Number.MAX_SAFE_INTEGER
+  const [state, dispatch] = React.useReducer(
+    switchReducer,
+    switchReducerInitialState
   );
-  const [activationPointFilter, activationPointFilterSet] =
-    React.useState<number>(Number.MAX_SAFE_INTEGER);
-  const [travelDistanceFilter, travelDistanceFilterSet] =
-    React.useState<number>(Number.MAX_SAFE_INTEGER);
+  const {
+    names,
+    forceFilter,
+    activationPointFilter,
+    travelDistanceFilter,
+    switchTypeFilter,
+  } = state;
+  const [displayedSwitches, displayedSwitchesSet] = React.useState(switches);
   const isInitialMountDone = React.useRef(false);
   const matches = useMediaQuery("(min-width:769px)");
   React.useEffect(() => {
@@ -90,7 +89,7 @@ export default function Home({ switches }: HomeProps) {
           }).then((data) => {
             displayedSwitchesSet(data);
           }),
-        380
+        450
       );
       return () => {
         clearTimeout(timeout);
@@ -114,24 +113,34 @@ export default function Home({ switches }: HomeProps) {
               <SearchBar
                 value={names}
                 switches={switches}
-                setNamesSet={setNamesSet}
+                setNamesSet={(value) =>
+                  dispatch({ type: "setValue", key: "names", value })
+                }
               />
             </Box>
           </Grid>
           <Grid item xs={12}>
             <Grid spacing={4} container>
-              {displayedSwitches.map((e) => {
-                return (
-                  <Grid key={e.uuid} item xs={12} sm={6} md={4}>
-                    <SwitchCard {...e} />
-                  </Grid>
-                );
-              })}
+              {displayedSwitches.length === 0 ? (
+                <Grid item xs={12}>
+                  <Typography component="p" variant="h6" textAlign="center">
+                    No results found
+                  </Typography>
+                </Grid>
+              ) : (
+                displayedSwitches.map((e) => {
+                  return (
+                    <Grid key={e.uuid} item xs={12} sm={6} md={4}>
+                      <SwitchCard {...e} />
+                    </Grid>
+                  );
+                })
+              )}
             </Grid>
           </Grid>
         </Grid>
       </Container>
-      <DrawerComplete>
+      <DrawerComplete reset={() => dispatch({ type: "reset" })}>
         <FormGroup>
           <Grid container gap={matches ? 1 : 2}>
             <Grid item xs={12}>
@@ -140,7 +149,9 @@ export default function Home({ switches }: HomeProps) {
                 <SearchBar
                   value={names}
                   switches={switches}
-                  setNamesSet={setNamesSet}
+                  setNamesSet={(value) =>
+                    dispatch({ type: "setValue", key: "names", value })
+                  }
                 />
               </FormControl>
             </Grid>
@@ -149,43 +160,69 @@ export default function Home({ switches }: HomeProps) {
                 <FormLabel component="legend">Switch type:</FormLabel>
                 <SwitchTypeCheckbox
                   switchType="clicky"
-                  handleChange={switchTypeFilterSet}
-                  defaultChecked={switchTypeFilter["clicky"]}
+                  handleChange={(value) =>
+                    dispatch({
+                      type: "setValue",
+                      key: "switchTypeFilter",
+                      value: { ...switchTypeFilter, ["clicky"]: value },
+                    })
+                  }
+                  checked={switchTypeFilter["clicky"]}
                 />
                 <SwitchTypeCheckbox
                   switchType="linear"
-                  handleChange={switchTypeFilterSet}
-                  defaultChecked={switchTypeFilter["linear"]}
+                  handleChange={(value) =>
+                    dispatch({
+                      type: "setValue",
+                      key: "switchTypeFilter",
+                      value: { ...switchTypeFilter, ["linear"]: value },
+                    })
+                  }
+                  checked={switchTypeFilter["linear"]}
                 />
                 <SwitchTypeCheckbox
                   switchType="tactile"
-                  handleChange={switchTypeFilterSet}
-                  defaultChecked={switchTypeFilter["tactile"]}
+                  handleChange={(value) =>
+                    dispatch({
+                      type: "setValue",
+                      key: "switchTypeFilter",
+                      value: { ...switchTypeFilter, ["tactile"]: value },
+                    })
+                  }
+                  checked={switchTypeFilter["tactile"]}
                 />
               </FormControl>
             </Grid>
             <Grid item xs={12}>
               <FilterSlider
-                defaultValue={forceFilter}
+                value={forceFilter}
                 className={"operating-force-slider"}
                 id={"max-operating-force"}
                 label="Max operating force"
                 marks={operatingForceTicks}
                 onChangeCommitted={(_, value) =>
-                  forceFilterSet(value as number)
+                  dispatch({
+                    type: "setValue",
+                    key: "forceFilter",
+                    value: value as number,
+                  })
                 }
               />
             </Grid>
             <Grid item xs={12}>
               <FilterSlider
-                defaultValue={activationPointFilter}
+                value={activationPointFilter}
                 className={"activation-point-slider"}
                 id={"max-activation-point"}
                 step={0.1}
                 label="Max Activation Point"
                 marks={activationPointTicks}
                 onChangeCommitted={(_, value) =>
-                  activationPointFilterSet(value as number)
+                  dispatch({
+                    type: "setValue",
+                    key: "activationPointFilter",
+                    value: value as number,
+                  })
                 }
               />
             </Grid>
@@ -193,12 +230,16 @@ export default function Home({ switches }: HomeProps) {
               <FilterSlider
                 className={"travel-distance-slider"}
                 step={0.1}
-                defaultValue={travelDistanceFilter}
+                value={travelDistanceFilter}
                 id={"max-travel-distance"}
                 label="Max travel-distance"
                 marks={travelDistanceTicks}
                 onChangeCommitted={(_, value) =>
-                  travelDistanceFilterSet(value as number)
+                  dispatch({
+                    type: "setValue",
+                    key: "travelDistanceFilter",
+                    value: value as number,
+                  })
                 }
               />
             </Grid>

@@ -2,11 +2,12 @@ import Autocomplete from "@material-ui/core/Autocomplete";
 import Chip from "@material-ui/core/Chip";
 import TextField from "@material-ui/core/TextField";
 import React from "react";
+import { SwitchReducerAction } from "../lib/switchReducer";
 import { MechSwitch } from "../types/switch";
 
 interface SearchBarProps {
   switches: MechSwitch[];
-  setNamesSet: React.Dispatch<React.SetStateAction<string[]>>;
+  setNamesSet: (param: string[]) => void;
   value?: string[];
 }
 

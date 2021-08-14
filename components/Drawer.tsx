@@ -8,7 +8,10 @@ import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Button from "@material-ui/core/Button";
 
-export const DrawerComplete: React.FC = ({ children }) => {
+export const DrawerComplete: React.FC<{ reset: () => void }> = ({
+  children,
+  reset,
+}) => {
   const [isOpen, isOpenSet] = React.useState(false);
   const CloseButton = React.useCallback(
     () => <Button onClick={() => isOpenSet(false)}>Close</Button>,
@@ -49,11 +52,20 @@ export const DrawerComplete: React.FC = ({ children }) => {
                         Filters
                       </Typography>
                     </Grid>
-                    {matches ? null : (
+                    {
                       <Grid item>
-                        <CloseButton />
+                        <Grid justifyContent="space-between" container>
+                          <Grid item>
+                            <Button onClick={() => reset()}>Reset</Button>{" "}
+                          </Grid>
+                          {matches ? null : (
+                            <Grid item>
+                              <CloseButton />
+                            </Grid>
+                          )}
+                        </Grid>
                       </Grid>
-                    )}
+                    }
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>

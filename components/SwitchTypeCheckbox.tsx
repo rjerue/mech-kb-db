@@ -8,13 +8,7 @@ import { SwitchType } from "../types/switch";
 
 interface SwitchTypeCheckboxProps
   extends Omit<FormControlLabelProps, "onChange" | "control" | "label"> {
-  handleChange: React.Dispatch<
-    React.SetStateAction<{
-      clicky: boolean;
-      linear: boolean;
-      tactile: boolean;
-    }>
-  >;
+  handleChange: (value: boolean) => void;
   switchType: SwitchType;
 }
 
@@ -28,7 +22,7 @@ export const SwitchTypeCheckbox: React.FC<SwitchTypeCheckboxProps> = ({
     <FormControlLabel
       onChange={(e: any) => {
         const checked = e.target.checked as boolean;
-        handleChange((e) => ({ ...e, [switchType]: checked }));
+        handleChange(checked);
       }}
       control={<Checkbox defaultChecked={defaultChecked} />}
       label={capitalizeFirstLetter(switchType)}
