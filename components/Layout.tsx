@@ -1,13 +1,13 @@
-import Container from "@material-ui/core/Container";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
+import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
 import NextLink from "next/link";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/system/Box";
-import IconButton from "@material-ui/core/IconButton";
-import Brightness4Icon from "@material-ui/icons/Brightness4";
-import Brightness7Icon from "@material-ui/icons/Brightness7";
-import { useTheme } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useTheme } from "@mui/material/styles";
 import React from "react";
 import { ThemeContext } from "../context/ThemeContext";
 

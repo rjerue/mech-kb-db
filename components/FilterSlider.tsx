@@ -1,9 +1,9 @@
 import React from "react";
-import Box from "@material-ui/core/Box";
-import Slider from "@material-ui/core/Slider";
-import type { Mark, SliderProps } from "@material-ui/core";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
+import type { Mark, SliderProps } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 
 interface FilterSliderProps extends SliderProps {
   marks: Mark[];

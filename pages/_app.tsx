@@ -2,11 +2,11 @@ import React from "react";
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { makeTheme } from "../lib/theme";
 import { ThemeContext } from "../context/ThemeContext";
 

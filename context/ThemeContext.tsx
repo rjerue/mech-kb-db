@@ -1,5 +1,5 @@
 import React from "react";
-import type { PaletteMode } from "@material-ui/core";
+import type { PaletteMode } from "@mui/material";
 
 export const ThemeContext = React.createContext({
   setThemeMode: (mode: PaletteMode) => {

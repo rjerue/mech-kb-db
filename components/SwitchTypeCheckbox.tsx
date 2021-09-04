@@ -1,7 +1,7 @@
-import Checkbox from "@material-ui/core/Checkbox";
+import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel, {
   FormControlLabelProps,
-} from "@material-ui/core/FormControlLabel";
+} from "@mui/material/FormControlLabel";
 import React from "react";
 import { capitalizeFirstLetter } from "../lib/string";
 import { SwitchType } from "../types/switch";

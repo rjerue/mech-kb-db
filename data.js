@@ -47,7 +47,8 @@ async function renewFolder(path) {
 }
 
 function renewDataFolder() {
-  return Promise.all([renewFolder("data"), renewFolder("public/resources")]);
+  const data = renewFolder("data").then(() => renewFolder("data/force-curve"));
+  return Promise.all([data, renewFolder("public/resources")]);
 }
 
 function writeJSON(name, path, data = { error: "No input!" }) {
@@ -57,14 +58,24 @@ function writeJSON(name, path, data = { error: "No input!" }) {
   );
 }
 
-async function imgToPublic(id, imgUrl) {
-  const img = await fetch.default(imgUrl);
-  if (!img.ok) {
-    console.warn(`Unexpected response for ${imgUrl}. ${img.statusText}`);
+async function writeFileStream(url, path) {
+  const data = await fetch.default(url);
+  if (!data.ok) {
+    console.warn(`Unexpected response for ${url}. ${data.statusText}`);
   } else {
-    return streamPipeline(
-      img.body,
-      fs.createWriteStream(`${process.cwd()}/public/resources/${id}.jpg`)
+    return streamPipeline(data.body, fs.createWriteStream(path));
+  }
+}
+
+function imgToPublic(imgUrl, id) {
+  return writeFileStream(imgUrl, `${process.cwd()}/public/resources/${id}.jpg`);
+}
+
+function forceCurveToData(name, url) {
+  if (url) {
+    return writeFileStream(
+      `${url.match(/(.+\d+)/g)[0]}.json`,
+      `${process.cwd()}/data/force-curve/${name}.json`
     );
   }
 }
@@ -79,15 +90,19 @@ async function main() {
   await Promise.all([
     writeJSON("all", "data", jsonNormalize),
     writeJSON("grouped", "data", jsonGrouped),
-    ...Object.entries(jsonGrouped).map(([key, value]) =>
-      writeJSON(key, "data", value)
-    ),
+    ...Object.entries(jsonGrouped).flatMap(([key, value]) => {
+      return [
+        writeJSON(key, "data", value),
+        forceCurveToData(value.uuid, value.forceCurveUrl),
+      ];
+    }),
     ...jsonNormalize.flatMap(({ img, uuid }) => {
       if (!img) {
         return [];
       }
       const imgArray = img.split(" ");
-      return imgArray.map((e, i) => imgToPublic(`${uuid}-${i}`, e));
+
+      return imgArray.map((e, i) => imgToPublic(e, `${uuid}-${i}`));
     }),
   ]);
 }

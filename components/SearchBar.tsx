@@ -1,8 +1,7 @@
-import Autocomplete from "@material-ui/core/Autocomplete";
-import Chip from "@material-ui/core/Chip";
-import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
 import React from "react";
-import { SwitchReducerAction } from "../lib/switchReducer";
 import { MechSwitch } from "../types/switch";
 
 interface SearchBarProps {
