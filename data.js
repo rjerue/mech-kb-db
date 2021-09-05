@@ -47,8 +47,11 @@ async function renewFolder(path) {
 }
 
 function renewDataFolder() {
-  const data = renewFolder("data").then(() => renewFolder("data/force-curve"));
-  return Promise.all([data, renewFolder("public/resources")]);
+  return Promise.all([
+    renewFolder("public/switches"),
+    renewFolder("public/force-curve"),
+    renewFolder("public/resources"),
+  ]);
 }
 
 function writeJSON(name, path, data = { error: "No input!" }) {
@@ -74,7 +77,7 @@ function imgToPublic(imgUrl, id) {
 function forceCurveToData(name, url) {
   if (url) {
     const u = `${url.match(/(.+\d+)/g)[0]}.json`;
-    const fp = `${process.cwd()}/data/force-curve/${name}.json`;
+    const fp = `${process.cwd()}/public/force-curve/${name}.json`;
     return writeFileStream(u, fp).then(() => {
       console.log(`Wrote: ${u} to ${fp}`);
     });
@@ -89,11 +92,11 @@ async function main() {
   const jsonGrouped = groupByBrandModelSeries(jsonNormalize);
   await renewData;
   await Promise.all([
-    writeJSON("all", "data", jsonNormalize),
-    writeJSON("grouped", "data", jsonGrouped),
+    writeJSON("all", "public/switches", jsonNormalize),
+    writeJSON("grouped", "public/switches", jsonGrouped),
     ...Object.entries(jsonGrouped).flatMap(([key, value]) => {
       return [
-        writeJSON(key, "data", value),
+        writeJSON(key, "public/switches", value),
         forceCurveToData(value.uuid, value.forceCurveUrl),
       ];
     }),

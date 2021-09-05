@@ -34,6 +34,5 @@ yarn-error.log*
 .vercel
 
 # app
-/data/
 .env
-/public/resources/
+/public/**/**
