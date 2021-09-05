@@ -14,7 +14,7 @@ export default async function handler(
       console.log(file);
     })
   );
-
+  console.log("DEBUG", __dirname, __filename);
   const { id } = req.query;
   const uuid = id as string;
   const folderPath = isVercel
