@@ -9,10 +9,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any[]>
 ) {
+  fs.readdir(process.cwd()).then((files) =>
+    files.forEach((file) => {
+      console.log(file);
+    })
+  );
+
   const { id } = req.query;
   const uuid = id as string;
   const folderPath = isVercel
-    ? [`${process.cwd()}`, "force-curve"]
+    ? [process.cwd(), "force-curve"]
     : ["./public", "force-curve"];
   const dir = path.resolve(...folderPath.concat(`${uuid}.json`));
   const file = await fs.readFile(dir);
