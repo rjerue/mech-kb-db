@@ -17,7 +17,9 @@ export default async function handler(
   console.log("DEBUG", __dirname, __filename);
   const { id } = req.query;
   const uuid = id as string;
-  const folderPath = isVercel ? [__filename, "..", ".."] : ["./public"];
+  const folderPath = isVercel
+    ? [__filename, "..", "..", "..", ".."]
+    : ["./public"];
   const dir = path.resolve(
     ...folderPath.concat(["force-curve", `${uuid}.json`])
   );
