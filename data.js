@@ -47,7 +47,9 @@ async function renewFolder(path) {
 }
 
 function renewDataFolder() {
-  const data = renewFolder("data").then(() => renewFolder("data/force-curve"));
+  const data = renewFolder("data").then(() =>
+    Promise.all([renewFolder("data/switches"), renewFolder("data/force-curve")])
+  );
   return Promise.all([data, renewFolder("public/resources")]);
 }
 
@@ -89,11 +91,11 @@ async function main() {
   const jsonGrouped = groupByBrandModelSeries(jsonNormalize);
   await renewData;
   await Promise.all([
-    writeJSON("all", "data", jsonNormalize),
-    writeJSON("grouped", "data", jsonGrouped),
+    writeJSON("all", "data/switches", jsonNormalize),
+    writeJSON("grouped", "data/switches", jsonGrouped),
     ...Object.entries(jsonGrouped).flatMap(([key, value]) => {
       return [
-        writeJSON(key, "data", value),
+        writeJSON(key, "data/switches", value),
         forceCurveToData(value.uuid, value.forceCurveUrl),
       ];
     }),

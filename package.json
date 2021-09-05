@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.0-rc.0",
     "@mui/material": "^5.0.0-rc.0",
+    "copy-webpack-plugin": "^9.0.1",
     "fuse.js": "^6.4.6",
     "next": "^11.1.0",
     "node-fetch": "^2.6.1",
