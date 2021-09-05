@@ -17,10 +17,10 @@ export default async function handler(
   console.log("DEBUG", __dirname, __filename);
   const { id } = req.query;
   const uuid = id as string;
-  const folderPath = isVercel
-    ? [process.cwd(), "force-curve"]
-    : ["./public", "force-curve"];
-  const dir = path.resolve(...folderPath.concat(`${uuid}.json`));
+  const folderPath = isVercel ? [__filename, "..", ".."] : ["./public"];
+  const dir = path.resolve(
+    ...folderPath.concat(["force-curve", `${uuid}.json`])
+  );
   const file = await fs.readFile(dir);
   const fileAsJson = JSON.parse(file.toString());
   res.status(200).json(fileAsJson);
