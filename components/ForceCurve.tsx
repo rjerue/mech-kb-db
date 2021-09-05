@@ -1,6 +1,4 @@
 import React from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import { MechSwitch } from "../types/switch";
 import dynamic from "next/dynamic";
 import Grid from "@mui/material/Grid";
@@ -32,7 +30,7 @@ export const ForceCurveCard: React.FC<MechSwitch> = ({ uuid }) => {
       stateSet(json);
     };
     getData();
-  }, []);
+  }, [uuid]);
   return (
     <Grid container justifyContent="center">
       <Grid item>

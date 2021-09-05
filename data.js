@@ -52,10 +52,10 @@ function renewDataFolder() {
 }
 
 function writeJSON(name, path, data = { error: "No input!" }) {
-  return fsp.writeFile(
-    `${process.cwd()}/${path}/${name.replace(/ /g, "_")}.json`,
-    JSON.stringify(data)
-  );
+  const fp = `${process.cwd()}/${path}/${name.replace(/ /g, "_")}.json`;
+  return fsp
+    .writeFile(fp, JSON.stringify(data))
+    .then(() => console.log(`Wrote: ${fp}`));
 }
 
 async function writeFileStream(url, path) {
@@ -73,10 +73,11 @@ function imgToPublic(imgUrl, id) {
 
 function forceCurveToData(name, url) {
   if (url) {
-    return writeFileStream(
-      `${url.match(/(.+\d+)/g)[0]}.json`,
-      `${process.cwd()}/data/force-curve/${name}.json`
-    );
+    const u = `${url.match(/(.+\d+)/g)[0]}.json`;
+    const fp = `${process.cwd()}/data/force-curve/${name}.json`;
+    return writeFileStream(u, fp).then(() => {
+      console.log(`Wrote: ${u} to ${fp}`);
+    });
   }
 }
 
