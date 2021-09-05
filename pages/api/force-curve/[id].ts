@@ -11,7 +11,9 @@ export default async function handler(
 ) {
   const { id } = req.query;
   const uuid = id as string;
-  const folderPath = isVercel ? ["./force-curve"] : ["./public", "force-curve"];
+  const folderPath = isVercel
+    ? [`${process.cwd()}`, "force-curve"]
+    : ["./public", "force-curve"];
   const dir = path.resolve(...folderPath.concat(`${uuid}.json`));
   const file = await fs.readFile(dir);
   const fileAsJson = JSON.parse(file.toString());
