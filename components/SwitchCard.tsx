@@ -7,7 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import { MechSwitch } from "../types/switch";
 import { capitalizeFirstLetter } from "../lib/string";
 import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
+import Button, { ButtonProps } from "@mui/material/Button";
 import Box from "@mui/system/Box";
 import Modal from "@mui/material/Modal";
 import { ForceCurveCard } from "./ForceCurve";
@@ -22,6 +22,12 @@ const modalStyle = {
   boxShadow: 24,
 };
 
+const ActionButton: React.FC<ButtonProps> = ({ children, ...props }) => (
+  <Button size="small" color="primary" {...props}>
+    {children}
+  </Button>
+);
+
 export const SwitchCard: React.FC<MechSwitch> = (props) => {
   const {
     displayName,
@@ -31,6 +37,7 @@ export const SwitchCard: React.FC<MechSwitch> = (props) => {
     travelDistance,
     uuid,
     forceCurveUrl,
+    purchaseUrl,
   } = props;
   const [isModalOpen, isModalOpenSet] = React.useState(false);
   return (
@@ -74,24 +81,35 @@ export const SwitchCard: React.FC<MechSwitch> = (props) => {
         </CardContent>
         <CardActions>
           <Box
-            visibility={forceCurveUrl ? "visible" : "hidden"}
+            visibility={forceCurveUrl || purchaseUrl ? "visible" : "hidden"}
             marginTop={"-10px"}
           >
-            <Button
-              size="small"
-              color="primary"
-              onClick={async () => {
-                isModalOpenSet(true);
-                const result = await fetch(`/api/force-curve/${uuid}`);
-                if (!result.ok) {
-                  console.error("Uh oh", result);
-                }
-                const json = await result.json();
-                console.log(uuid, json);
-              }}
-            >
-              Force Curve
-            </Button>
+            {forceCurveUrl ? (
+              <ActionButton
+                onClick={async () => {
+                  isModalOpenSet(true);
+                  const result = await fetch(`/api/force-curve/${uuid}`);
+                  if (!result.ok) {
+                    console.error("Uh oh", result);
+                  }
+                  const json = await result.json();
+                  console.log(uuid, json);
+                }}
+              >
+                Force Curve
+              </ActionButton>
+            ) : null}
+            {purchaseUrl ? (
+              <ActionButton
+                href={purchaseUrl}
+                {...{ target: "_blank", rel: "noopener" }}
+              >
+                Purchase
+              </ActionButton>
+            ) : null}
+            {forceCurveUrl || purchaseUrl ? null : (
+              <ActionButton>{"null"}</ActionButton>
+            )}
           </Box>
         </CardActions>
       </Card>

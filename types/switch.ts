@@ -12,6 +12,7 @@ export interface MechSwitch {
   travelDistance: number; // mm
   lifespan: number; // Million
   forceCurveUrl?: string;
+  purchaseUrl?: string;
 }
 
 export interface GetSwitchesParams {
