@@ -24,8 +24,10 @@ export const switchReducer = (
   action: SwitchReducerAction
 ) => {
   switch (action.type) {
-    case "setValue":
-      return { ...state, [action.key]: action.value };
+    case "setValue": {
+      const { key, value } = action
+      return { ...state, [key]: value };
+    }
     case "reset":
       return switchReducerInitialState;
     default:
